@@ -4,14 +4,12 @@ import { Text, Image, useColorScheme } from "react-native";
 import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset, useAssets } from "expo-asset";
-import {
-  NavigationContainer,
-  DarkTheme,
-  DefaultTheme,
-} from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import Tabs from "./navigation/Tabs";
 import Stack from "./navigation/Stack";
 import RootNav from "./navigation/Root";
+import { ThemeProvider } from "styled-components";
+import { darkTheme, lightTheme } from "./styled";
 
 export default function App() {
   // const [ready, setReady] = useState(false);
@@ -24,8 +22,10 @@ export default function App() {
     return <AppLoading />;
   }
   return (
-    <NavigationContainer>
-      <RootNav />
-    </NavigationContainer>
+    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+      <NavigationContainer>
+        <RootNav />
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }

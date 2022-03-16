@@ -20,6 +20,9 @@ const Tabs = () => {
 
   return (
     <Tab.Navigator
+      sceneContainerStyle={{
+        backgroundColor: isDark ? DARKGREY_COLOR : "white",
+      }}
       initialRouteName="Search"
       screenOptions={{
         tabBarStyle: { backgroundColor: isDark ? DARKGREY_COLOR : "white" },
