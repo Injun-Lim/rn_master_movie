@@ -4,6 +4,7 @@ import styled from "styled-components/native";
 import Swiper from "react-native-swiper";
 import { useState, useEffect } from "react";
 import Slide from "../components/Slide";
+import Poster from "../components/Poster";
 
 const API_KEY = "4bcbfabbc30b44ceca30afb09d315286";
 
@@ -17,6 +18,62 @@ const Loader = styled.View`
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 //const SCREEN_HEIGHT = Dimensions.get("window").height;와 동일
+
+const ListTitle = styled.Text`
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-left: 30px;
+`;
+const TrendingMovie = styled.View`
+  margin-right: 10px;
+  align-items: center;
+`;
+const TrendingScroll = styled.ScrollView`
+  margin-top: 20px;
+`;
+const TrendingTitle = styled.Text`
+  color: white;
+  font-weight: 600;
+  margin-top: 7px;
+  margin-bottom: 5px;
+`;
+const TrendingVotes = styled.Text`
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+`;
+
+const ListContainer = styled.View`
+  margin-bottom: 40px;
+`;
+
+const HorizontalMovie = styled.View`
+  padding: 0px 30px;
+  flex-direction: row;
+  margin-bottom: 30px;
+`;
+
+const HColumn = styled.View`
+  margin-left: 15px;
+  width: 80%;
+`;
+
+const Overview = styled.Text`
+  color: white;
+  opacity: 0.8;
+  width: 80%;
+`;
+
+const ReleaseDate = styled.Text`
+  color: white;
+  opacity: 0.8;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
+
+const CommingSoonTitle = styled(ListTitle)`
+  margin-bottom: 30px;
+`;
 
 const Movies = ({ navigation: { navigate } }) => {
   const [loading, setLoading] = useState(true);
@@ -74,7 +131,11 @@ const Movies = ({ navigation: { navigate } }) => {
         autoplayTimeout={3.5}
         showsButtons={false}
         showsPagination={false}
-        containerStyle={{ width: "100%", height: SCREEN_HEIGHT / 4 }}
+        containerStyle={{
+          marginBottom: 30,
+          width: "100%",
+          height: SCREEN_HEIGHT / 4,
+        }}
       >
         {nowPlaying.map((movie) => (
           <Slide
@@ -87,6 +148,47 @@ const Movies = ({ navigation: { navigate } }) => {
           />
         ))}
       </Swiper>
+      <ListContainer>
+        <ListTitle>Trending Movies</ListTitle>
+        <TrendingScroll
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 10 }}
+        >
+          {trending.map((movie) => (
+            <TrendingMovie key={movie.id}>
+              <Poster path={movie.poster_path} />
+              <TrendingTitle>
+                {movie.original_title.slice(0, 10)}
+                {movie.original_title.length > 10 ? "..." : null}
+              </TrendingTitle>
+
+              <TrendingVotes>
+                {movie.vote_average > 0
+                  ? `⭐ ${movie.vote_average}/10`
+                  : "Comming Soon"}
+              </TrendingVotes>
+            </TrendingMovie>
+          ))}
+        </TrendingScroll>
+      </ListContainer>
+      <CommingSoonTitle>Coming Soon</CommingSoonTitle>
+      {upcoming.map((movie) => (
+        <HorizontalMovie key={movie.id}>
+          <Poster path={movie.poster_path} />
+          <HColumn>
+            <TrendingTitle>{movie.original_title}</TrendingTitle>
+            <ReleaseDate>
+              {new Date(movie.release_date).toLocaleDateString("ko")}
+            </ReleaseDate>
+            <Overview>
+              {movie.overview !== "" && movie.overview.length > 140
+                ? `${movie.overview.slice(0, 140)}...`
+                : movie.overview}
+            </Overview>
+          </HColumn>
+        </HorizontalMovie>
+      ))}
     </Container>
   );
 };
