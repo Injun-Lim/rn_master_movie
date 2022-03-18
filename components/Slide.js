@@ -34,6 +34,7 @@ const Column = styled.View`
 `;
 
 const Slide = ({
+  key_id,
   backdrop_path,
   poster_path,
   original_title,
@@ -44,7 +45,7 @@ const Slide = ({
   /* 테스트용으로 전부 darkTheme, 후에 위 주석 해제 필요 */
   const isDark = true;
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} key={key_id}>
       <BgImg
         style={StyleSheet.absoluteFill}
         source={{ uri: makeImgPath(backdrop_path) }}
