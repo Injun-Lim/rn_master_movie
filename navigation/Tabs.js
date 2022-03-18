@@ -16,14 +16,16 @@ import {
 const Tab = createBottomTabNavigator();
 
 const Tabs = () => {
-  const isDark = useColorScheme() === "dark";
+  // const isDark = useColorScheme() === "dark";
+  /* 테스트용으로 전부 darkTheme, 후에 위 주석 해제 필요 */
+  const isDark = true;
 
   return (
     <Tab.Navigator
       sceneContainerStyle={{
         backgroundColor: isDark ? DARKGREY_COLOR : "white",
       }}
-      initialRouteName="Search"
+      initialRouteName="Movies"
       screenOptions={{
         tabBarStyle: { backgroundColor: isDark ? DARKGREY_COLOR : "white" },
         tabBarActiveTintColor: isDark ? YELLOW_COLOR : DARKGREY_COLOR,

@@ -4,6 +4,7 @@ import styled from "styled-components/native";
 import { makeImgPath } from "./../utils";
 import { BlurView } from "expo-blur";
 import Poster from "./Poster";
+import Votes from "./Votes";
 
 const BgImg = styled.Image`
   /* width: 100%;
@@ -19,9 +20,6 @@ const Title = styled.Text`
 const Overview = styled.Text`
   color: rgba(255, 255, 255, 0.6);
   margin-top: 10px;
-`;
-const Votes = styled(Overview)`
-  font-size: 12px;
 `;
 
 const Wrapper = styled.View`
@@ -42,7 +40,9 @@ const Slide = ({
   vote_average,
   overview1,
 }) => {
-  const isDark = useColorScheme() === "dark";
+  // const isDark = useColorScheme() === "dark";
+  /* 테스트용으로 전부 darkTheme, 후에 위 주석 해제 필요 */
+  const isDark = true;
   return (
     <View style={{ flex: 1 }}>
       <BgImg
@@ -61,7 +61,9 @@ const Slide = ({
             <Overview>
               {overview1 ? overview1.slice(0, 150) : "no overview ^^"}...
             </Overview>
-            {vote_average > 0 ? <Votes>⭐ {vote_average}/10</Votes> : null}
+            {vote_average > 0 ? (
+              <Votes vote_average={vote_average} fSize={14} />
+            ) : null}
           </Column>
         </Wrapper>
       </BlurView>

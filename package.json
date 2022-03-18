@@ -27,7 +27,8 @@
     "react-native-swiper": "^1.6.0-rc.3",
     "react-native-web": "0.17.1",
     "react-native-web-swiper": "^2.2.3",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "uri-scheme": "^1.0.115"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

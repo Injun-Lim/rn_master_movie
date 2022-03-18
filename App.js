@@ -22,7 +22,13 @@ export default function App() {
     return <AppLoading />;
   }
   return (
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+    <ThemeProvider
+      theme={
+        isDark
+          ? darkTheme
+          : darkTheme /* 테스트용으로 전부 darkTheme, 후에 lightTheme으로 수정 필요 */
+      }
+    >
       <NavigationContainer>
         <RootNav />
       </NavigationContainer>

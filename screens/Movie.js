@@ -1,10 +1,18 @@
 import React from "react";
-import { Dimensions, ActivityIndicator } from "react-native";
+import {
+  Dimensions,
+  ActivityIndicator,
+  RefreshControl,
+  Text,
+} from "react-native";
 import styled from "styled-components/native";
 import Swiper from "react-native-swiper";
 import { useState, useEffect } from "react";
 import Slide from "../components/Slide";
 import Poster from "../components/Poster";
+import Votes from "./../components/Votes";
+import VMedia from "./../components/VMedia";
+import HMedia from "./../components/HMedia";
 
 const API_KEY = "4bcbfabbc30b44ceca30afb09d315286";
 
@@ -25,50 +33,13 @@ const ListTitle = styled.Text`
   font-weight: 600;
   margin-left: 30px;
 `;
-const TrendingMovie = styled.View`
-  margin-right: 10px;
-  align-items: center;
-`;
+
 const TrendingScroll = styled.ScrollView`
   margin-top: 20px;
-`;
-const TrendingTitle = styled.Text`
-  color: white;
-  font-weight: 600;
-  margin-top: 7px;
-  margin-bottom: 5px;
-`;
-const TrendingVotes = styled.Text`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 10px;
 `;
 
 const ListContainer = styled.View`
   margin-bottom: 40px;
-`;
-
-const HorizontalMovie = styled.View`
-  padding: 0px 30px;
-  flex-direction: row;
-  margin-bottom: 30px;
-`;
-
-const HColumn = styled.View`
-  margin-left: 15px;
-  width: 80%;
-`;
-
-const Overview = styled.Text`
-  color: white;
-  opacity: 0.8;
-  width: 80%;
-`;
-
-const ReleaseDate = styled.Text`
-  color: white;
-  opacity: 0.8;
-  margin-top: 10px;
-  margin-bottom: 10px;
 `;
 
 const CommingSoonTitle = styled(ListTitle)`
@@ -80,6 +51,7 @@ const Movies = ({ navigation: { navigate } }) => {
   const [nowPlaying, setNowPlaying] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [trending, setTrending] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const getNowPlaying = async () => {
     const response = await fetch(
@@ -118,12 +90,22 @@ const Movies = ({ navigation: { navigate } }) => {
     getData();
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getData();
+    setRefreshing(false);
+  };
+
   return loading ? (
     <Loader>
       <ActivityIndicator size="large" color="#999999" />
     </Loader>
   ) : (
-    <Container>
+    <Container
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <Swiper
         horizontal
         loop
@@ -156,38 +138,24 @@ const Movies = ({ navigation: { navigate } }) => {
           contentContainerStyle={{ paddingLeft: 10 }}
         >
           {trending.map((movie) => (
-            <TrendingMovie key={movie.id}>
-              <Poster path={movie.poster_path} />
-              <TrendingTitle>
-                {movie.original_title.slice(0, 10)}
-                {movie.original_title.length > 10 ? "..." : null}
-              </TrendingTitle>
-
-              <TrendingVotes>
-                {movie.vote_average > 0
-                  ? `⭐ ${movie.vote_average}/10`
-                  : "Comming Soon"}
-              </TrendingVotes>
-            </TrendingMovie>
+            <VMedia
+              key_id={movie.id}
+              poster_path={movie.poster_path}
+              original_title={movie.original_title}
+              vote_average={movie.vote_average}
+            />
           ))}
         </TrendingScroll>
       </ListContainer>
       <CommingSoonTitle>Coming Soon</CommingSoonTitle>
       {upcoming.map((movie) => (
-        <HorizontalMovie key={movie.id}>
-          <Poster path={movie.poster_path} />
-          <HColumn>
-            <TrendingTitle>{movie.original_title}</TrendingTitle>
-            <ReleaseDate>
-              {new Date(movie.release_date).toLocaleDateString("ko")}
-            </ReleaseDate>
-            <Overview>
-              {movie.overview !== "" && movie.overview.length > 140
-                ? `${movie.overview.slice(0, 140)}...`
-                : movie.overview}
-            </Overview>
-          </HColumn>
-        </HorizontalMovie>
+        <HMedia
+          key_id={movie.id}
+          poster_path={movie.poster_path}
+          original_title={movie.original_title}
+          release_date={movie.release_date}
+          overview={movie.overview}
+        ></HMedia>
       ))}
     </Container>
   );
