@@ -48,6 +48,13 @@ const CommingSoonTitle = styled(ListTitle)`
   margin-bottom: 30px;
 `;
 
+const VSeperator = styled.View`
+  width: 10px;
+`;
+const HSeparator = styled.View`
+  height: 10px;
+`;
+
 const Movies = ({ navigation: { navigate } }) => {
   const [loading, setLoading] = useState(true);
   const [nowPlaying, setNowPlaying] = useState([]);
@@ -98,6 +105,24 @@ const Movies = ({ navigation: { navigate } }) => {
     setRefreshing(false);
   };
 
+  const renderHMedia = ({ item }) => (
+    <HMedia
+      poster_path={item.poster_path}
+      original_title={item.original_title}
+      release_date={item.release_date}
+      overview={item.overview}
+    />
+  );
+
+  const renderVMedia = ({ item }) => (
+    <VMedia
+      poster_path={item.poster_path}
+      original_title={item.original_title}
+      vote_average={item.vote_average}
+    />
+  );
+
+  const movieKeyExtractor = movieKeyExtractor;
   return loading ? (
     <Loader>
       <ActivityIndicator size="large" color="#999999" />
@@ -139,31 +164,18 @@ const Movies = ({ navigation: { navigate } }) => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 10 }}
               data={trending}
-              keyExtractor={(item) => item.id + ""}
-              ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-              renderItem={({ item }) => (
-                <VMedia
-                  poster_path={item.poster_path}
-                  original_title={item.original_title}
-                  vote_average={item.vote_average}
-                />
-              )}
+              keyExtractor={movieKeyExtractor}
+              ItemSeparatorComponent={VSeperator}
+              renderItem={renderVMedia}
             />
           </ListContainer>
           <CommingSoonTitle>Coming Soon</CommingSoonTitle>
         </>
       }
       data={upcoming}
-      keyExtractor={(item) => item.id + ""}
-      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-      renderItem={({ item }) => (
-        <HMedia
-          poster_path={item.poster_path}
-          original_title={item.original_title}
-          release_date={item.release_date}
-          overview={item.overview}
-        />
-      )}
+      keyExtractor={movieKeyExtractor}
+      ItemSeparatorComponent={HSeparator}
+      renderItem={renderHMedia}
     />
   );
 };
