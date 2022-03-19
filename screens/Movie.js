@@ -6,6 +6,7 @@ import {
   Text,
   FlatList,
   View,
+  LogBox,
 } from "react-native";
 import styled from "styled-components/native";
 import Swiper from "react-native-swiper";
@@ -15,8 +16,10 @@ import Poster from "../components/Poster";
 import Votes from "./../components/Votes";
 import VMedia from "./../components/VMedia";
 import HMedia from "./../components/HMedia";
+import { useQuery, useQueryClient } from "react-query";
+import { moviesApi } from "./../utils/api";
 
-const API_KEY = "4bcbfabbc30b44ceca30afb09d315286";
+LogBox.ignoreLogs(["Setting a timer for a long period of time"]); // js timer 오류 무시하는 구문
 
 const Container = styled.ScrollView``;
 
@@ -56,53 +59,29 @@ const HSeparator = styled.View`
 `;
 
 const Movies = ({ navigation: { navigate } }) => {
-  const [loading, setLoading] = useState(true);
-  const [nowPlaying, setNowPlaying] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [trending, setTrending] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const getNowPlaying = async () => {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1&region=KR`
-    );
-
-    const { results } = await response.json();
-    setNowPlaying(results);
-  };
-
-  const getUpcoming = async () => {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1&region=KR`
-    );
-
-    const { results } = await response.json();
-    setUpcoming(results);
-  };
-
-  const getTrending = async () => {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`
-    );
-
-    const { results } = await response.json();
-    setTrending(results);
-  };
-
-  const getData = async () => {
-    //Promise.all -> 파라미터의 모든 것들을 수행하는 것을 기다림
-    await Promise.all([getNowPlaying(), getUpcoming(), getTrending()]);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
+  const queryClient = useQueryClient();
+  const {
+    isLoading: nowPlayingLoading,
+    data: nowPlayingData,
+    refetch: refetchNowPlaying,
+    isRefetching: isRefetchingNowPlaying,
+  } = useQuery(["nowPlaying", "movies"], moviesApi.nowPlaying);
+  const {
+    isLoading: upcomingLoading,
+    data: upcomingData,
+    refetch: refetchUpcoming,
+    isRefetching: isRefetchingUpcoming,
+  } = useQuery(["upcoming", "movies"], moviesApi.upcoming);
+  const {
+    isLoading: trendingLoading,
+    data: trendingData,
+    refetch: refetchTrending,
+    isRefetching: isRefetchingTrending,
+  } = useQuery(["trending", "movies"], moviesApi.trending);
 
   const onRefresh = async () => {
-    setRefreshing(true);
-    await getData();
-    setRefreshing(false);
+    console.log("refreshing");
+    queryClient.refetchQueries(["movies"]);
   };
 
   const renderHMedia = ({ item }) => (
@@ -123,6 +102,11 @@ const Movies = ({ navigation: { navigate } }) => {
   );
 
   const movieKeyExtractor = movieKeyExtractor;
+
+  const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
+  const refreshing =
+    isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
+  console.log(refreshing);
   return loading ? (
     <Loader>
       <ActivityIndicator size="large" color="#999999" />
@@ -146,7 +130,7 @@ const Movies = ({ navigation: { navigate } }) => {
               height: SCREEN_HEIGHT / 4,
             }}
           >
-            {nowPlaying.map((movie) => (
+            {nowPlayingData.results.map((movie) => (
               <Slide
                 key={movie.id}
                 backdrop_path={movie.backdrop_path}
@@ -163,7 +147,7 @@ const Movies = ({ navigation: { navigate } }) => {
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 10 }}
-              data={trending}
+              data={trendingData.results}
               keyExtractor={movieKeyExtractor}
               ItemSeparatorComponent={VSeperator}
               renderItem={renderVMedia}
@@ -172,7 +156,7 @@ const Movies = ({ navigation: { navigate } }) => {
           <CommingSoonTitle>Coming Soon</CommingSoonTitle>
         </>
       }
-      data={upcoming}
+      data={upcomingData.results}
       keyExtractor={movieKeyExtractor}
       ItemSeparatorComponent={HSeparator}
       renderItem={renderHMedia}

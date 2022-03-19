@@ -27,6 +27,7 @@ const Tabs = () => {
       }}
       initialRouteName="Movies"
       screenOptions={{
+        unmountOnBlur: true, //다른 tab으로 이동시 메모리에서 해당 화면 삭제
         tabBarStyle: { backgroundColor: isDark ? DARKGREY_COLOR : "white" },
         tabBarActiveTintColor: isDark ? YELLOW_COLOR : DARKGREY_COLOR,
         tabBarInactiveTintColor: isDark ? LIGHTGREY_COLOR : MIDGREY_COLOR,
