@@ -4,6 +4,8 @@ import {
   ActivityIndicator,
   RefreshControl,
   Text,
+  FlatList,
+  View,
 } from "react-native";
 import styled from "styled-components/native";
 import Swiper from "react-native-swiper";
@@ -34,7 +36,7 @@ const ListTitle = styled.Text`
   margin-left: 30px;
 `;
 
-const TrendingScroll = styled.ScrollView`
+const TrendingScroll = styled.FlatList`
   margin-top: 20px;
 `;
 
@@ -101,63 +103,68 @@ const Movies = ({ navigation: { navigate } }) => {
       <ActivityIndicator size="large" color="#999999" />
     </Loader>
   ) : (
-    <Container
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <Swiper
-        horizontal
-        loop
-        autoplay
-        autoplayTimeout={3.5}
-        showsButtons={false}
-        showsPagination={false}
-        containerStyle={{
-          marginBottom: 30,
-          width: "100%",
-          height: SCREEN_HEIGHT / 4,
-        }}
-      >
-        {nowPlaying.map((movie) => (
-          <Slide
-            key={movie.id}
-            backdrop_path={movie.backdrop_path}
-            poster_path={movie.poster_path}
-            original_title={movie.original_title}
-            vote_average={movie.vote_average}
-            overview1={movie.overview}
-          />
-        ))}
-      </Swiper>
-      <ListContainer>
-        <ListTitle>Trending Movies</ListTitle>
-        <TrendingScroll
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 10 }}
-        >
-          {trending.map((movie) => (
-            <VMedia
-              key_id={movie.id}
-              poster_path={movie.poster_path}
-              original_title={movie.original_title}
-              vote_average={movie.vote_average}
+    <FlatList
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      ListHeaderComponent={
+        <>
+          <Swiper
+            horizontal
+            loop
+            autoplay
+            autoplayTimeout={3.5}
+            showsButtons={false}
+            showsPagination={false}
+            containerStyle={{
+              marginBottom: 30,
+              width: "100%",
+              height: SCREEN_HEIGHT / 4,
+            }}
+          >
+            {nowPlaying.map((movie) => (
+              <Slide
+                key={movie.id}
+                backdrop_path={movie.backdrop_path}
+                poster_path={movie.poster_path}
+                original_title={movie.original_title}
+                vote_average={movie.vote_average}
+                overview1={movie.overview}
+              />
+            ))}
+          </Swiper>
+          <ListContainer>
+            <ListTitle>Trending Movies</ListTitle>
+            <TrendingScroll
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 10 }}
+              data={trending}
+              keyExtractor={(item) => item.id + ""}
+              ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+              renderItem={({ item }) => (
+                <VMedia
+                  poster_path={item.poster_path}
+                  original_title={item.original_title}
+                  vote_average={item.vote_average}
+                />
+              )}
             />
-          ))}
-        </TrendingScroll>
-      </ListContainer>
-      <CommingSoonTitle>Coming Soon</CommingSoonTitle>
-      {upcoming.map((movie) => (
+          </ListContainer>
+          <CommingSoonTitle>Coming Soon</CommingSoonTitle>
+        </>
+      }
+      data={upcoming}
+      keyExtractor={(item) => item.id + ""}
+      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      renderItem={({ item }) => (
         <HMedia
-          key_id={movie.id}
-          poster_path={movie.poster_path}
-          original_title={movie.original_title}
-          release_date={movie.release_date}
-          overview={movie.overview}
-        ></HMedia>
-      ))}
-    </Container>
+          poster_path={item.poster_path}
+          original_title={item.original_title}
+          release_date={item.release_date}
+          overview={item.overview}
+        />
+      )}
+    />
   );
 };
 

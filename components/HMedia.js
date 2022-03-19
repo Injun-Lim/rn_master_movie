@@ -5,7 +5,6 @@ import Poster from "./Poster";
 const HorizontalMovie = styled.View`
   padding: 0px 30px;
   flex-direction: row;
-  margin-bottom: 30px;
 `;
 const HColumn = styled.View`
   margin-left: 15px;
@@ -30,15 +29,9 @@ const OriginalTitle = styled.Text`
   margin-bottom: 5px;
 `;
 
-const HMedia = ({
-  key_id,
-  poster_path,
-  original_title,
-  release_date,
-  overview,
-}) => {
+const HMedia = ({ poster_path, original_title, release_date, overview }) => {
   return (
-    <HorizontalMovie key={key_id}>
+    <HorizontalMovie>
       <Poster path={poster_path} />
       <HColumn>
         <OriginalTitle>{original_title}</OriginalTitle>

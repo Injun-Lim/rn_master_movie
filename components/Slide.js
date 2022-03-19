@@ -45,7 +45,7 @@ const Slide = ({
   /* 테스트용으로 전부 darkTheme, 후에 위 주석 해제 필요 */
   const isDark = true;
   return (
-    <View style={{ flex: 1 }} key={key_id}>
+    <View style={{ flex: 1 }}>
       <BgImg
         style={StyleSheet.absoluteFill}
         source={{ uri: makeImgPath(backdrop_path) }}

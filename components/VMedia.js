@@ -4,7 +4,6 @@ import Poster from "./Poster";
 import Votes from "./Votes";
 
 const TrendingMovie = styled.View`
-  margin-right: 10px;
   align-items: center;
 `;
 
@@ -17,7 +16,7 @@ const TrendingTitle = styled.Text`
 
 const VMedia = ({ key_id, poster_path, original_title, vote_average }) => {
   return (
-    <TrendingMovie key={key_id}>
+    <TrendingMovie>
       <Poster path={poster_path} />
       <TrendingTitle>
         {original_title.slice(0, 10)}
