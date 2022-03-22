@@ -1,33 +1,18 @@
 import React from "react";
-import {
-  Dimensions,
-  ActivityIndicator,
-  RefreshControl,
-  Text,
-  FlatList,
-  View,
-  LogBox,
-} from "react-native";
-import styled from "styled-components/native";
+import { Dimensions, FlatList, LogBox } from "react-native";
 import Swiper from "react-native-swiper";
-import { useState, useEffect } from "react";
-import Slide from "../components/Slide";
-import Poster from "../components/Poster";
-import Votes from "./../components/Votes";
-import VMedia from "./../components/VMedia";
-import HMedia from "./../components/HMedia";
 import { useQuery, useQueryClient } from "react-query";
+import styled from "styled-components/native";
+import HList from "../components/HList";
+import Slide from "../components/Slide";
+import HMedia from "./../components/HMedia";
+import Loader from "./../components/Loader";
+import VMedia from "./../components/VMedia";
 import { moviesApi } from "./../utils/api";
 
 LogBox.ignoreLogs(["Setting a timer for a long period of time"]); // js timer 오류 무시하는 구문
 
 const Container = styled.ScrollView``;
-
-const Loader = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 //const SCREEN_HEIGHT = Dimensions.get("window").height;와 동일
@@ -65,19 +50,19 @@ const Movies = ({ navigation: { navigate } }) => {
     data: nowPlayingData,
     refetch: refetchNowPlaying,
     isRefetching: isRefetchingNowPlaying,
-  } = useQuery(["nowPlaying", "movies"], moviesApi.nowPlaying);
+  } = useQuery(["movies", "nowPlaying"], moviesApi.nowPlaying);
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
     refetch: refetchUpcoming,
     isRefetching: isRefetchingUpcoming,
-  } = useQuery(["upcoming", "movies"], moviesApi.upcoming);
+  } = useQuery(["movies", "upcoming"], moviesApi.upcoming);
   const {
     isLoading: trendingLoading,
     data: trendingData,
     refetch: refetchTrending,
     isRefetching: isRefetchingTrending,
-  } = useQuery(["trending", "movies"], moviesApi.trending);
+  } = useQuery(["movies", "trending"], moviesApi.trending);
 
   const onRefresh = async () => {
     console.log("refreshing");
@@ -101,16 +86,16 @@ const Movies = ({ navigation: { navigate } }) => {
     />
   );
 
-  const movieKeyExtractor = movieKeyExtractor;
+  const movieKeyExtractor = (item) => {
+    return item.id;
+  };
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   const refreshing =
     isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
   console.log(refreshing);
   return loading ? (
-    <Loader>
-      <ActivityIndicator size="large" color="#999999" />
-    </Loader>
+    <Loader />
   ) : (
     <FlatList
       refreshing={refreshing}
@@ -141,18 +126,9 @@ const Movies = ({ navigation: { navigate } }) => {
               />
             ))}
           </Swiper>
-          <ListContainer>
-            <ListTitle>Trending Movies</ListTitle>
-            <TrendingScroll
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 10 }}
-              data={trendingData.results}
-              keyExtractor={movieKeyExtractor}
-              ItemSeparatorComponent={VSeperator}
-              renderItem={renderVMedia}
-            />
-          </ListContainer>
+          {trendingData ? (
+            <HList title="Trending Movies" data={trendingData.results} />
+          ) : null}
           <CommingSoonTitle>Coming Soon</CommingSoonTitle>
         </>
       }

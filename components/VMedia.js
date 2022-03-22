@@ -14,7 +14,7 @@ const TrendingTitle = styled.Text`
   margin-bottom: 5px;
 `;
 
-const VMedia = ({ key_id, poster_path, original_title, vote_average }) => {
+const VMedia = ({ poster_path, original_title, vote_average }) => {
   return (
     <TrendingMovie>
       <Poster path={poster_path} />
