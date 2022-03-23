@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dimensions, FlatList, LogBox } from "react-native";
 import Swiper from "react-native-swiper";
 import { useQuery, useQueryClient } from "react-query";
@@ -44,29 +44,25 @@ const HSeparator = styled.View`
 `;
 
 const Movies = ({ navigation: { navigate } }) => {
+  const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
-  const {
-    isLoading: nowPlayingLoading,
-    data: nowPlayingData,
-    refetch: refetchNowPlaying,
-    isRefetching: isRefetchingNowPlaying,
-  } = useQuery(["movies", "nowPlaying"], moviesApi.nowPlaying);
-  const {
-    isLoading: upcomingLoading,
-    data: upcomingData,
-    refetch: refetchUpcoming,
-    isRefetching: isRefetchingUpcoming,
-  } = useQuery(["movies", "upcoming"], moviesApi.upcoming);
-  const {
-    isLoading: trendingLoading,
-    data: trendingData,
-    refetch: refetchTrending,
-    isRefetching: isRefetchingTrending,
-  } = useQuery(["movies", "trending"], moviesApi.trending);
+  const { isLoading: nowPlayingLoading, data: nowPlayingData } = useQuery(
+    ["movies", "nowPlaying"],
+    moviesApi.nowPlaying
+  );
+  const { isLoading: upcomingLoading, data: upcomingData } = useQuery(
+    ["movies", "upcoming"],
+    moviesApi.upcoming
+  );
+  const { isLoading: trendingLoading, data: trendingData } = useQuery(
+    ["movies", "trending"],
+    moviesApi.trending
+  );
 
   const onRefresh = async () => {
-    console.log("refreshing");
-    queryClient.refetchQueries(["movies"]);
+    setRefreshing(true);
+    await queryClient.refetchQueries(["movies"]);
+    setRefreshing(false);
   };
 
   const renderHMedia = ({ item }) => (
@@ -91,8 +87,8 @@ const Movies = ({ navigation: { navigate } }) => {
   };
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
-  const refreshing =
-    isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
+  // const refreshing =
+  //   isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
   console.log(refreshing);
   return loading ? (
     <Loader />
