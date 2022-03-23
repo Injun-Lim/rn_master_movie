@@ -1,10 +1,16 @@
 import React from "react";
-import { View, StyleSheet, useColorScheme } from "react-native";
+import {
+  View,
+  StyleSheet,
+  useColorScheme,
+  TouchableWithoutFeedback,
+} from "react-native";
 import styled from "styled-components/native";
 import { makeImgPath } from "./../utils";
 import { BlurView } from "expo-blur";
 import Poster from "./Poster";
 import Votes from "./Votes";
+import { useNavigation } from "@react-navigation/native";
 
 const BgImg = styled.Image`
   /* width: 100%;
@@ -44,31 +50,37 @@ const Slide = ({
   // const isDark = useColorScheme() === "dark";
   /* 테스트용으로 전부 darkTheme, 후에 위 주석 해제 필요 */
   const isDark = true;
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", { screen: "Detail" });
+  };
   return (
-    <View style={{ flex: 1 }}>
-      <BgImg
-        style={StyleSheet.absoluteFill}
-        source={{ uri: makeImgPath(backdrop_path) }}
-      />
-      <BlurView
-        intensity={80}
-        style={StyleSheet.absoluteFill}
-        tint={isDark ? "dark" : "light"}
-      >
-        <Wrapper>
-          <Poster path={poster_path}></Poster>
-          <Column>
-            <Title>{original_title}</Title>
-            <Overview>
-              {overview1 ? overview1.slice(0, 150) : "no overview ^^"}...
-            </Overview>
-            {vote_average > 0 ? (
-              <Votes vote_average={vote_average} fSize={14} />
-            ) : null}
-          </Column>
-        </Wrapper>
-      </BlurView>
-    </View>
+    <TouchableWithoutFeedback onPress={goToDetail}>
+      <View style={{ flex: 1 }}>
+        <BgImg
+          style={StyleSheet.absoluteFill}
+          source={{ uri: makeImgPath(backdrop_path) }}
+        />
+        <BlurView
+          intensity={80}
+          style={StyleSheet.absoluteFill}
+          tint={isDark ? "dark" : "light"}
+        >
+          <Wrapper>
+            <Poster path={poster_path}></Poster>
+            <Column>
+              <Title>{original_title}</Title>
+              <Overview>
+                {overview1 ? overview1.slice(0, 150) : "no overview ^^"}...
+              </Overview>
+              {vote_average > 0 ? (
+                <Votes vote_average={vote_average} fSize={14} />
+              ) : null}
+            </Column>
+          </Wrapper>
+        </BlurView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

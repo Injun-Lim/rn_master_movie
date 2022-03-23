@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import { moviesApi, tvApi } from "./../utils/api";
 import { useQuery } from "react-query";
+import Loader from "./../components/Loader";
+import HList from "./../components/HList";
 
 const Container = styled.ScrollView``;
 
@@ -10,7 +12,8 @@ const SearchBar = styled.TextInput`
   padding: 10px 15px;
   border-radius: 15px;
   width: 90%;
-  margin: 10px auto;
+  margin: 20px auto;
+  margin-bottom: 40px;
 `;
 
 const Search = () => {
@@ -39,8 +42,6 @@ const Search = () => {
     searchTv();
   };
 
-  console.log(tvLoading, tvData);
-
   return (
     <Container>
       <SearchBar
@@ -50,6 +51,11 @@ const Search = () => {
         onChangeText={onChangeText}
         onSubmitEditing={onSubmit}
       />
+      {movieLoading || tvLoading ? <Loader /> : null}
+      {movieData ? (
+        <HList title="Movie Result" data={movieData.results} />
+      ) : null}
+      {tvData ? <HList title="TV Result" data={tvData.results} /> : null}
     </Container>
   );
 };

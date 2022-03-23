@@ -1,4 +1,6 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
+import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import Poster from "./Poster";
 import Votes from "./Votes";
@@ -15,16 +17,24 @@ const TrendingTitle = styled.Text`
 `;
 
 const VMedia = ({ poster_path, original_title, vote_average }) => {
-  return (
-    <TrendingMovie>
-      <Poster path={poster_path} />
-      <TrendingTitle>
-        {original_title.slice(0, 10)}
-        {original_title.length > 10 ? "..." : null}
-      </TrendingTitle>
+  const navigation = useNavigation();
 
-      {vote_average ? <Votes vote_average={vote_average} fSize={12} /> : null}
-    </TrendingMovie>
+  const goToDetail = () => {
+    navigation.navigate("Stack", { screen: "Detail" });
+  };
+
+  return (
+    <TouchableOpacity onPress={goToDetail}>
+      <TrendingMovie>
+        <Poster path={poster_path} />
+        <TrendingTitle>
+          {original_title.slice(0, 10)}
+          {original_title.length > 10 ? "..." : null}
+        </TrendingTitle>
+
+        {vote_average ? <Votes vote_average={vote_average} fSize={12} /> : null}
+      </TrendingMovie>
+    </TouchableOpacity>
   );
 };
 
