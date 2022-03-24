@@ -3,8 +3,10 @@
     "name": "rn_master_movie",
     "slug": "rn_master_movie",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"],
-    "description": "",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "description": "main page",
     "userInterfaceStyle": "automatic"
   },
   "name": "rn_master_movie"

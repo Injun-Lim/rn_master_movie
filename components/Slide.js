@@ -1,16 +1,11 @@
+import { useNavigation } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import styled from "styled-components/native";
 import { makeImgPath } from "./../utils";
-import { BlurView } from "expo-blur";
 import Poster from "./Poster";
 import Votes from "./Votes";
-import { useNavigation } from "@react-navigation/native";
 
 const BgImg = styled.Image`
   /* width: 100%;
@@ -40,19 +35,22 @@ const Column = styled.View`
 `;
 
 const Slide = ({
-  key_id,
   backdrop_path,
   poster_path,
   original_title,
   vote_average,
   overview1,
+  fullData,
 }) => {
   // const isDark = useColorScheme() === "dark";
   /* 테스트용으로 전부 darkTheme, 후에 위 주석 해제 필요 */
   const isDark = true;
   const navigation = useNavigation();
   const goToDetail = () => {
-    navigation.navigate("Stack", { screen: "Detail" });
+    navigation.navigate("Stack", {
+      screen: "Detail",
+      params: { ...fullData },
+    });
   };
   return (
     <TouchableWithoutFeedback onPress={goToDetail}>

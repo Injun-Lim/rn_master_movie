@@ -16,11 +16,14 @@ const TrendingTitle = styled.Text`
   margin-bottom: 5px;
 `;
 
-const VMedia = ({ poster_path, original_title, vote_average }) => {
+const VMedia = ({ poster_path, original_title, vote_average, fullData }) => {
   const navigation = useNavigation();
 
   const goToDetail = () => {
-    navigation.navigate("Stack", { screen: "Detail" });
+    navigation.navigate("Stack", {
+      screen: "Detail",
+      params: { ...fullData },
+    });
   };
 
   return (

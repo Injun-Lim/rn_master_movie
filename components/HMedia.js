@@ -31,10 +31,19 @@ const OriginalTitle = styled.Text`
   margin-bottom: 5px;
 `;
 
-const HMedia = ({ poster_path, original_title, release_date, overview }) => {
+const HMedia = ({
+  poster_path,
+  original_title,
+  release_date,
+  overview,
+  fullData,
+}) => {
   const navigation = useNavigation();
   const goToDetail = () => {
-    navigation.navigate("Stack", { screen: "Detail" });
+    navigation.navigate("Stack", {
+      screen: "Detail",
+      params: { ...fullData },
+    });
   };
   return (
     <TouchableOpacity onPress={goToDetail}>
