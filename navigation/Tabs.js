@@ -35,11 +35,11 @@ const Tabs = () => {
         headerTitleStyle: { color: isDark ? "white" : DARKGREY_COLOR },
         tabBarLabelStyle: { fontSize: 12, fontWeight: "700" },
 
-        headerRight: () => (
-          <View>
-            <Text>HeaderRight</Text>
-          </View>
-        ),
+        // headerRight: () => (
+        //   <View>
+        //     <Text>HeaderRight</Text>
+        //   </View>
+        // ),
       }}
     >
       <Tab.Screen

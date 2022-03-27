@@ -1,10 +1,22 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
-import { Dimensions, StyleSheet } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Linking,
+  TouchableOpacity,
+  Share,
+  Platform,
+} from "react-native";
 import styled from "styled-components/native";
 import Poster from "./../components/Poster";
 import { makeImgPath } from "./../utils";
 import { DARKGREY_COLOR } from "./../color";
+import { useQuery } from "react-query";
+import { moviesApi, tvApi } from "./../utils/api";
+import Loader from "./../components/Loader";
+import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -35,18 +47,88 @@ const Title = styled.Text`
   font-weight: 500;
 `;
 
-const Overview = styled.Text`
-  color: ${(props) => props.theme.textColor};
-  margin-top: 20px;
+const DataContainer = styled.View`
   padding: 0px 20px;
 `;
 
+const Overview = styled.Text`
+  color: ${(props) => props.theme.textColor};
+  margin: 20px 0px;
+`;
+
+const VideoBtn = styled.TouchableOpacity`
+  flex-direction: row;
+`;
+const BtnText = styled.Text`
+  color: white;
+  margin-bottom: 10px;
+  font-weight: 500;
+  line-height: 24px;
+  margin-left: 10px;
+`;
+
 const Detail = ({ navigation: { setOptions }, route: { params } }) => {
+  const isMovie = "original_title" in params;
+  const ShareButton = () => (
+    <TouchableOpacity onPress={shareMedia}>
+      <Ionicons name="share-outline" color="white" size={24} />
+    </TouchableOpacity>
+  );
+
+  const shareMedia = async () => {
+    const isAndroid = Platform.OS === "android";
+    const homepage = isMovie
+      ? `https://www.imdb.com/title/${data.imdb_id}/`
+      : data.homepage;
+    if (isAndroid) {
+      await Share.share({
+        message: `${params.overview}\nCheck it out : ${homepage}`,
+        title:
+          "original_title" in params
+            ? params.original_title
+            : params.original_name,
+      });
+    } else {
+      await Share.share({
+        url: homepage,
+        title:
+          "original_title" in params
+            ? params.original_title
+            : params.original_name,
+      });
+    }
+  };
+
+  const { isLoading, data } = useQuery(
+    [isMovie ? "movies" : "tv", params.id],
+    isMovie ? moviesApi.detail : tvApi.detail
+  );
+  // const { isLoading: tvLoading, data: tvData } = useQuery(
+  //   ["tv", params.id],
+  //   tvApi.detail,
+  //   {
+  //     enabled: "original_name" in params,
+  //   }
+  // );
   useEffect(() => {
     setOptions({
       title: "original_title" in params ? "Movie Detail" : "TV show Detail",
     });
   }, []);
+  useEffect(() => {
+    if (data) {
+      setOptions({
+        headerRight: () => <ShareButton />,
+      });
+    }
+  }, [data]);
+
+  const openYTLink = async (videoId) => {
+    const baseUrl = `http://m.youtube.com/watch?v=${videoId}`;
+    // await Linking.openURL(baseUrl);
+    await WebBrowser.openBrowserAsync(baseUrl);
+  };
+
   return (
     <Container>
       <Header>
@@ -67,7 +149,16 @@ const Detail = ({ navigation: { setOptions }, route: { params } }) => {
           </Title>
         </Column>
       </Header>
-      <Overview>{params.overview}</Overview>
+      <DataContainer>
+        <Overview>{params.overview}</Overview>
+        {isLoading ? <Loader /> : null}
+        {data?.videos?.results?.map((video) => (
+          <VideoBtn key={video.key} onPress={() => openYTLink(video.key)}>
+            <Ionicons name="logo-youtube" color="white" size={24} />
+            <BtnText>{video.name}</BtnText>
+          </VideoBtn>
+        ))}
+      </DataContainer>
     </Container>
   );
 };
