@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dimensions, FlatList, LogBox } from "react-native";
 import Swiper from "react-native-swiper";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient, useInfiniteQuery } from "react-query";
 import styled from "styled-components/native";
 import HList from "../components/HList";
 import Slide from "../components/Slide";
@@ -50,10 +50,21 @@ const Movies = ({ navigation: { navigate } }) => {
     ["movies", "nowPlaying"],
     moviesApi.nowPlaying
   );
-  const { isLoading: upcomingLoading, data: upcomingData } = useQuery(
-    ["movies", "upcoming"],
-    moviesApi.upcoming
-  );
+  const {
+    isLoading: upcomingLoading,
+    data: upcomingData,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(["movies", "upcoming"], moviesApi.upcoming, {
+    // getNextPageParam을 쓰면 api에서 pageParam 인자를 받을 수 있고, 이를 api에 그대로 넘겨주면 된다. 이번의 경우 moviesApi.upcoming에 이걸 활용함.
+    getNextPageParam: (currentPage) => {
+      //인자는 2개를 받을 수 있음. (현재 페이지, 페이지 모두) Movie API는 이게 잘 구현되어 있어서 인자 1개로 한다고 함.
+      if (currentPage.page + 1 > currentPage.total_pages) {
+        return null;
+      }
+      return currentPage.page + 1;
+    },
+  });
   const { isLoading: trendingLoading, data: trendingData } = useQuery(
     ["movies", "trending"],
     moviesApi.trending
@@ -90,11 +101,18 @@ const Movies = ({ navigation: { navigate } }) => {
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   // const refreshing =
   //   isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
-  console.log(refreshing);
+
+  const loadMore = (hasNextPage) => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
   return loading ? (
     <Loader />
   ) : (
     <FlatList
+      onEndReached={loadMore} /* 무한스크롤 - function 실행 */
+      // onEndReachedThreshold={0.4} /* 무한스크롤 - function 실행할 시점 설정 */
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListHeaderComponent={
@@ -130,7 +148,7 @@ const Movies = ({ navigation: { navigate } }) => {
           <CommingSoonTitle>Coming Soon</CommingSoonTitle>
         </>
       }
-      data={upcomingData.results}
+      data={upcomingData.pages.map((page) => page.results).flat()}
       keyExtractor={movieKeyExtractor}
       ItemSeparatorComponent={HSeparator}
       renderItem={renderHMedia}

@@ -6,7 +6,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "description": "main page",
+    "description": "main page + detail page",
     "userInterfaceStyle": "automatic"
   },
   "name": "rn_master_movie"
